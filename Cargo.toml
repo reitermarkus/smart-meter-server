@@ -1,0 +1,17 @@
+[package]
+name = "smart_meter_server"
+version = "0.1.0"
+edition = "2021"
+authors = ["Markus Reiter <me@reitermark.us>"]
+license = "MIT OR Apache-2.0"
+readme = "ReadMe.md"
+
+[dependencies]
+actix-rt = "1.1"
+dlms_cosem = { version = "0.1.1", features = ["serde"] }
+either = "1.6"
+hex = "0.4"
+serialport = { version = "4.0", default-features = false }
+smart_meter = { git = "https://github.com/reitermarkus/smart-meter-rs" }
+serde_json = "1.0"
+webthing = "0.14.0"
