@@ -1,5 +1,5 @@
 [package]
-name = "smart_meter_server"
+name = "smart-meter-server"
 version = "0.1.0"
 edition = "2018"
 authors = ["Markus Reiter <me@reitermark.us>"]
