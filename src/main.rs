@@ -102,7 +102,7 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
   thread::spawn(move || {
     let thing = thing_clone;
 
-    while let Some(res) = smart_meter.next() {
+    for res in smart_meter {
       let obis = res.unwrap();
 
       let mut thing = thing.write().unwrap();
