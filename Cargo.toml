@@ -5,6 +5,7 @@ edition = "2018"
 authors = ["Markus Reiter <me@reitermark.us>"]
 license = "MIT OR Apache-2.0"
 readme = "ReadMe.md"
+publish = false
 
 [dependencies]
 actix-rt = "1.1"
