@@ -33,7 +33,7 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
   let key = <[u8; 16]>::from_hex(key).expect("Invalid key format");
   let port = env::var("PORT").map(|s| s.parse::<u16>().expect("Port is invalid")).unwrap_or(8888);
 
-  let stream = if url_or_path.contains(":") {
+  let stream = if url_or_path.contains(':') {
     Either::Left(TcpStream::connect(url_or_path)?)
   } else {
     let mut serial_port = serialport::new(url_or_path, 2400)
