@@ -9,7 +9,7 @@ publish = false
 
 [dependencies]
 actix-rt = "2.7.0"
-dlms_cosem = { version = "0.1.1", features = ["serde"] }
+dlms_cosem = { version = "0.2.0", features = ["serde"] }
 either = "1.6"
 hex = "0.4"
 serialport = { version = "4.0", default-features = false }
