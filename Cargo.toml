@@ -10,7 +10,7 @@ publish = false
 [dependencies]
 actix-rt = "2.7.0"
 dlms_cosem = { version = "0.2.0", features = ["serde"] }
-either = "1.6"
+either = "1.9"
 hex = "0.4"
 serialport = { version = "4.2", default-features = false }
 smart_meter = "0.2.0"
