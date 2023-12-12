@@ -12,7 +12,7 @@ actix-rt = "2.7.0"
 dlms_cosem = { version = "0.2.0", features = ["serde"] }
 either = "1.6"
 hex = "0.4"
-serialport = { version = "4.2", default-features = false }
+serialport = { version = "4.3", default-features = false }
 smart_meter = "0.2.0"
 serde_json = "1.0"
 webthing = "0.15.0"
