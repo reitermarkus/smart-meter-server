@@ -1,18 +1,21 @@
 [package]
 name = "smart-meter-server"
 version = "0.1.0"
-edition = "2018"
+edition = "2021"
 authors = ["Markus Reiter <me@reitermark.us>"]
 license = "MIT OR Apache-2.0"
 readme = "ReadMe.md"
 publish = false
 
 [dependencies]
-actix-rt = "2.7.0"
+actix-rt = "2.9.0"
 dlms_cosem = { version = "0.2.0", features = ["serde"] }
-either = "1.6"
+either = "1.9"
 hex = "0.4"
-serialport = { version = "4.2", default-features = false }
+serialport = { version = "4.3", default-features = false }
 smart_meter = "0.2.0"
 serde_json = "1.0"
-webthing = "0.15.0"
+webthing = "0.15.2"
+log = "0.4"
+env_logger = "0.10"
+anyhow = "1.0.76"

@@ -1,10 +1,10 @@
-use std::error::Error;
 use std::env;
 use std::net::TcpStream;
 use std::sync::{Arc, RwLock, Weak};
 use std::time::Duration;
 use std::thread;
 
+use anyhow::Context;
 use either::Either;
 use hex::FromHex;
 use serialport::{Parity, DataBits, StopBits};
@@ -27,22 +27,29 @@ impl ActionGenerator for Generator {
 }
 
 #[actix_rt::main]
-async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
+async fn main() -> anyhow::Result<()> {
+  env_logger::init();
+
   let url_or_path = env::var("SERIAL_PORT").unwrap_or_else(|_| "/dev/serial0".into());
   let key = env::var("KEY").expect("No key provided");
   let key = <[u8; 16]>::from_hex(key).expect("Invalid key format");
   let port = env::var("PORT").map(|s| s.parse::<u16>().expect("Port is invalid")).unwrap_or(8888);
 
   let stream = if url_or_path.contains(':') {
-    Either::Left(TcpStream::connect(url_or_path)?)
+    log::info!("Connecting to serial device {url_or_path}…");
+    Either::Left(TcpStream::connect(&url_or_path).with_context(|| format!("Failed to connect to {url_or_path}"))?)
   } else {
-    let mut serial_port = serialport::new(url_or_path, 2400)
+    log::info!("Opening serial device {url_or_path}…");
+    let mut serial_port = serialport::new(&url_or_path, 2400)
       .parity(Parity::Even)
       .data_bits(DataBits::Eight)
       .stop_bits(StopBits::One)
       .timeout(Duration::from_secs(30))
-      .open_native()?;
-    serial_port.set_exclusive(true)?;
+      .open_native()
+      .with_context(|| format!("Failed to open {url_or_path}"))?;
+
+    serial_port.set_exclusive(true).with_context(|| format!("Failed to get exclusive access to {url_or_path}"))?;
+
     Either::Right(serial_port)
   };
 
@@ -77,7 +84,7 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
       Some("A smart energy meter".to_owned()),
   );
 
-  let first_response = smart_meter.next().unwrap()?;
+  let first_response = smart_meter.next().unwrap().context("Failed to receive initial message from smart meter")?;
 
   for (obis_code, reg) in first_response.iter() {
     let level_description = json!({
@@ -90,7 +97,7 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
     let level_description = level_description.as_object().unwrap().clone();
     thing.add_property(Box::new(BaseProperty::new(
         obis_code.to_string(),
-        serde_json::to_value(reg.value())?,
+        serde_json::to_value(reg.value()).unwrap(),
         None,
         Some(level_description),
     )));
@@ -125,5 +132,5 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
       None,
       Some(true),
   );
-  Ok(server.start(None).await?)
+  Ok(server.start(None).await.context("Failed to start web server")?)
 }
