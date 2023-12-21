@@ -2,7 +2,7 @@ all:
   hosts:
     smart-meter-server:
       ansible_user: pi
-      ansible_host: door-server.local
+      ansible_host: door-server
   children:
     raspberry_pi:
       hosts:
