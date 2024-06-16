@@ -1,26 +1,29 @@
-use std::env;
-use std::net::TcpStream;
-use std::sync::{Arc, RwLock, Weak};
-use std::time::Duration;
-use std::thread;
+use std::{
+  env,
+  net::TcpStream,
+  sync::{Arc, RwLock, Weak},
+  thread,
+  time::Duration,
+};
 
 use anyhow::Context;
 use either::Either;
 use hex::FromHex;
-use serialport::{Parity, DataBits, StopBits};
 use serde_json::json;
+use serialport::{DataBits, Parity, StopBits};
 
-use dlms_cosem::{ObisCode, Data, DateTime, Dlms};
+use dlms_cosem::{Data, DateTime, Dlms, ObisCode};
 use smart_meter::SmartMeter;
-use webthing::{BaseThing, BaseProperty, Thing, WebThingServer, Action, ThingsType, server::ActionGenerator};
+use webthing::{server::ActionGenerator, Action, BaseProperty, BaseThing, Thing, ThingsType, WebThingServer};
 
 struct Generator;
 
 impl ActionGenerator for Generator {
-  fn generate(&self,
-      _thing: Weak<RwLock<Box<dyn Thing>>>,
-      _name: String,
-      _input: Option<&serde_json::Value>,
+  fn generate(
+    &self,
+    _thing: Weak<RwLock<Box<dyn Thing>>>,
+    _name: String,
+    _input: Option<&serde_json::Value>,
   ) -> Option<Box<dyn Action>> {
     None
   }
@@ -78,10 +81,10 @@ async fn main() -> anyhow::Result<()> {
   });
 
   let mut thing = BaseThing::new(
-      "urn:dev:ops:smart-meter-1".to_owned(),
-      "Smart Meter".to_owned(),
-      Some(vec!["MultiLevelSensor".to_owned()]),
-      Some("A smart energy meter".to_owned()),
+    "urn:dev:ops:smart-meter-1".to_owned(),
+    "Smart Meter".to_owned(),
+    Some(vec!["MultiLevelSensor".to_owned()]),
+    Some("A smart energy meter".to_owned()),
   );
 
   let first_response = smart_meter.next().unwrap().context("Failed to receive initial message from smart meter")?;
@@ -96,10 +99,10 @@ async fn main() -> anyhow::Result<()> {
     });
     let level_description = level_description.as_object().unwrap().clone();
     thing.add_property(Box::new(BaseProperty::new(
-        obis_code.to_string(),
-        serde_json::to_value(reg.value()).unwrap(),
-        None,
-        Some(level_description),
+      obis_code.to_string(),
+      serde_json::to_value(reg.value()).unwrap(),
+      None,
+      Some(level_description),
     )));
   }
 
@@ -123,14 +126,7 @@ async fn main() -> anyhow::Result<()> {
     }
   });
 
-  let mut server = WebThingServer::new(
-      ThingsType::Single(thing),
-      Some(port),
-      None,
-      None,
-      Box::new(Generator),
-      None,
-      Some(true),
-  );
+  let mut server =
+    WebThingServer::new(ThingsType::Single(thing), Some(port), None, None, Box::new(Generator), None, Some(true));
   Ok(server.start(None).await.context("Failed to start web server")?)
 }
