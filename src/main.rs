@@ -128,5 +128,5 @@ async fn main() -> anyhow::Result<()> {
 
   let mut server =
     WebThingServer::new(ThingsType::Single(thing), Some(port), None, None, Box::new(Generator), None, Some(true));
-  Ok(server.start(None).await.context("Failed to start web server")?)
+  server.start(None).await.context("Failed to start web server")
 }
